@@ -1,15 +1,16 @@
 import unittest
+from abc import ABCMeta
 import os
 import sys
-sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("../../src"))
 
-from src.templator.Jinja2WrapperTemplator import Jinja2WrapperTemplator
+from src.templator.BaseTemplator import BaseTemplator
 
-class Jinja2WrapperTemplatorTest(unittest.TestCase):
+class BaseTemplatorTest(unittest.TestCase, metaclass=ABCMeta):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.instance:Jinja2WrapperTemplator = None
+    class BaseTemplatorStub(BaseTemplator):
+        def render(self, *args, **kwargs):
+            pass
 
     def setUp(self) -> None:
         self.set_instance("")
@@ -17,21 +18,9 @@ class Jinja2WrapperTemplatorTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.instance = None
 
-    def set_instance(self, *args, **kwargs)->Jinja2WrapperTemplator:
-        self.instance = Jinja2WrapperTemplator(*args, **kwargs)
+    def set_instance(self, *args, **kwargs)->BaseTemplatorStub:
+        self.instance = self.BaseTemplatorStub(*args, **kwargs)
         return self.instance
-
-    def test_should_create_instance_with_string(self):
-        try:
-            self.set_instance("")
-        except:
-            self.fail("could not create instance.")
-
-    def test_should_be_render_with_dict(self):
-        try:
-            self.instance.render({})
-        except:
-            self.fail("could not render")
 
     def test_should_be_set_datas(self):
         try:

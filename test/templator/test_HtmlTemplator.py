@@ -1,14 +1,13 @@
 import unittest
 from unittest.mock import MagicMock
-from BaseTemplatorTest import BaseTemplatorTest
 import os
 import sys
-sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("../../src"))
 
 from src.templator.HtmlTemplator import HtmlTemplator
 from src.templator.ITemplator import ITemplator
 
-class TestHtmlTemplator(BaseTemplatorTest):
+class TestHtmlTemplator(unittest.TestCase):
 
     def setUp(self) -> None:
         self.set_templator_spy(klass=ITemplator)
