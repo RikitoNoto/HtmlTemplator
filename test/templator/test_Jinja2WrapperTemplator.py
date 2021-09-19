@@ -1,7 +1,7 @@
 import unittest
 import os
 import sys
-sys.path.append(os.path.abspath("../../src"))
+sys.path.append(os.path.abspath("../.."))
 
 from src.templator.Jinja2WrapperTemplator import Jinja2WrapperTemplator
 

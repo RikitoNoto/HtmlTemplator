@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 import os
 import sys
-sys.path.append(os.path.abspath("../../src"))
+sys.path.append(os.path.abspath("../.."))
 
 from src.templator.HtmlTemplator import HtmlTemplator
 from src.templator.ITemplator import ITemplator

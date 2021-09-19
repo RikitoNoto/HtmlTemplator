@@ -2,7 +2,7 @@ import unittest
 from abc import ABCMeta
 import os
 import sys
-sys.path.append(os.path.abspath("../../src"))
+sys.path.append(os.path.abspath("../.."))
 
 from src.templator.BaseTemplator import BaseTemplator
 
