@@ -5,6 +5,9 @@ from typing import Union
 
 class DirTreeConfigurator:
     class File:
+        """
+        A class that represents a file.
+        """
         def __init__(self, path="", content=""):
             self.path = path
             self.content = content
@@ -27,12 +30,11 @@ class DirTreeConfigurator:
         def del_content(self) -> None:
             self.__content = ""
 
-        path = property(get_path, set_path, del_path)
-        content = property(get_content, set_content, del_content)
+        path = property(get_path, set_path, del_path, "the path of this file.")
+        content = property(get_content, set_content, del_content, "the content of this file.")
 
     @classmethod
     def compile(cls, src_path:str, dst_path:str, dir_function=None, file_function=None):
-        # shutil.copytree(src=src_path, dst=dst_path)
         cls.__create_directory_tree(src_path, dst_path, dir_function, file_function)
 
     @classmethod
@@ -49,26 +51,38 @@ class DirTreeConfigurator:
                                This function is required take a file path as an argument and return FileObject.
         :return: None
         """
-        if(not os.path.exists(dst_path)):
+
+        """
+        if there is not the directory of dest,
+        then create the dest directory first.
+        """
+        if(not os.path.exists(dst_path)):  # if there is not the directory of dest
             os.mkdir(dst_path)
             if(dir_function is not None):
                 dir_function(dst_path)
 
+        # search the source directory.
+        # if discover a directory, call this function recursively.
         for name in os.listdir(src_path):
-            if(os.path.isfile(os.path.join(src_path, name))):
-                if(file_function is not None):
-                    file = file_function(os.path.join(src_path, name))#TODO: this function's output.
+            # source path(file or directory).
+            src_target_path = os.path.join(src_path, name)
+
+            # if the target is file.
+            if(os.path.isfile(src_target_path)):
+                if(file_function is not None):  # there is the file function.
+                    file = file_function(src_target_path)
                     if(file.path is not ""):
                         with open(file.path, mode="w") as f:
                             f.write(file.content)
-                else:
-                    shutil.copyfile(os.path.join(src_path, name), os.path.join(dst_path, name))
 
-            elif(os.path.isdir(os.path.join(src_path, name))):
+                else:  # if file function is None, then copy the file.
+                    shutil.copyfile(src_target_path, os.path.join(dst_path, name))
+
+            elif(os.path.isdir(src_target_path)):
                 dst_directory_name = os.path.join(dst_path, name)
-                os.mkdir(dst_directory_name)
+                os.mkdir(dst_directory_name)  # make the dest directory
+
+                # if there is the function of a directory, execute the function with the dest path as an argument.
                 if(dir_function is not None):
                     dir_function(dst_directory_name)
-                cls.__create_directory_tree(os.path.join(src_path, name), dst_directory_name, dir_function=dir_function, file_function=file_function)
-
-        
+                cls.__create_directory_tree(src_target_path, dst_directory_name, dir_function=dir_function, file_function=file_function)

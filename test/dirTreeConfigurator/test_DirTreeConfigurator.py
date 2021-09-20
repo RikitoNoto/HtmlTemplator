@@ -42,46 +42,63 @@ class DirTreeConfiguratorTest(unittest.TestCase):
 
     def test_should_copy_tree(self):
         dir_tree_configurator = DirTreeConfigurator()
-        html_file_name = "test.html"
-        open(os.path.join(self.SRC_DIR_PATH, html_file_name), mode="w").close()
+
+        dir_function_stub = self.add_file("test.html")
+
         dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
-        self.assertTrue(os.path.exists(os.path.join(self.DST_DIR_PATH, html_file_name)))
+        self.assertTrue(os.path.exists(dir_function_stub.spy_dst_file_path))
 
     def test_should_copy_tree_with_dir_function(self):
         dir_tree_configurator = DirTreeConfigurator()
-        dir_function_stub = MagicMock()
-        html_file_name = "test.html"
-        open(os.path.join(self.SRC_DIR_PATH, html_file_name), mode="w").close()
+        dir_function_stub = self.add_file("test.html")
+
         dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, dir_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
-        self.assertTrue(os.path.exists(os.path.join(self.DST_DIR_PATH, html_file_name)))
+        self.assertTrue(os.path.exists(dir_function_stub.spy_dst_file_path))
         dir_function_stub.assert_called_with(self.DST_DIR_PATH)
 
     def test_should_copy_tree_with_file_function(self):
         dir_tree_configurator = DirTreeConfigurator()
-        dir_function_stub = MagicMock()
-        dir_function_stub.return_value = DirTreeConfigurator.File()
-        html_file_name = "test.html"
-        open(os.path.join(self.SRC_DIR_PATH, html_file_name), mode="w").close()
+
+        dir_function_stub = self.add_file(name="test.html")
+
         dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
-        dir_function_stub.assert_called_with(os.path.join(self.SRC_DIR_PATH, html_file_name))
+        dir_function_stub.assert_called_with(dir_function_stub.spy_src_file_path)
 
     def test_should_copy_tree_with_file_content(self):
         dir_tree_configurator = DirTreeConfigurator()
-        dir_function_stub = MagicMock()
-        html_file_name = "test.html"
-        path = os.path.join(self.SRC_DIR_PATH, html_file_name)
 
-        dir_function_stub.return_value = DirTreeConfigurator.File(path, "test")
+        dir_function_stub = self.add_file(name="test.html", content="test")
 
-        open(path, mode="w").close()
         dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
-        dir_function_stub.assert_called_with(os.path.join(self.SRC_DIR_PATH, html_file_name))
-        with open(path, "r") as file:
+        dir_function_stub.assert_called_with(dir_function_stub.spy_src_file_path)
+        with open(dir_function_stub.spy_dst_file_path, "r") as file:
             self.assertEqual(file.read(), "test")
+
+    def add_file(self, name: str, directory: str = "", content: str = "")->MagicMock:
+        if(directory is not ""):
+            src_file_path = os.path.join(self.SRC_DIR_PATH, directory, name)  # the source file path.
+            dst_file_path = os.path.join(self.DST_DIR_PATH, directory, name)  # the destination file path.
+        else:
+            src_file_path = os.path.join(self.SRC_DIR_PATH, name)  # the source file path.
+            dst_file_path = os.path.join(self.DST_DIR_PATH, name)  # the destination file path.
+
+        dir_function_stub = MagicMock()
+
+        # registe imfomations of file to the mock.
+        dir_function_stub.spy_src_file_path = src_file_path
+        dir_function_stub.spy_dst_file_path = dst_file_path
+        dir_function_stub.spy_name = name
+        dir_function_stub.spy_content = content
+
+        dir_function_stub.return_value = DirTreeConfigurator.File(dst_file_path, content)
+
+        open(src_file_path, mode="w").close()
+        return dir_function_stub
+
 
 if __name__ == '__main__':
     unittest.main()
