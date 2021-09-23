@@ -29,50 +29,36 @@ class DirTreeConfiguratorTest(unittest.TestCase):
             # remove the dest directory if there is.
             shutil.rmtree(self.DST_DIR_PATH)
 
-    def test_should_create_the_instance(self):
-        try:
-            DirTreeConfigurator()
-        except:
-            self.fail("could not create instance.")
-
     def test_should_copy_tree_with_empty(self):
-        dir_tree_configurator = DirTreeConfigurator()
-        dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH)
+        DirTreeConfigurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
 
     def test_should_copy_tree(self):
-        dir_tree_configurator = DirTreeConfigurator()
-
         dir_function_stub = self.add_file("test.html")
 
-        dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH)
+        DirTreeConfigurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
         self.assertTrue(os.path.exists(dir_function_stub.spy_dst_file_path))
 
     def test_should_copy_tree_with_dir_function(self):
-        dir_tree_configurator = DirTreeConfigurator()
         dir_function_stub = self.add_file("test.html")
 
-        dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, dir_function=dir_function_stub)
+        DirTreeConfigurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, dir_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
         self.assertTrue(os.path.exists(dir_function_stub.spy_dst_file_path))
         dir_function_stub.assert_called_with(self.DST_DIR_PATH)
 
     def test_should_copy_tree_with_file_function(self):
-        dir_tree_configurator = DirTreeConfigurator()
-
         dir_function_stub = self.add_file(name="test.html")
 
-        dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
+        DirTreeConfigurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
         dir_function_stub.assert_called_with(dir_function_stub.spy_src_file_path)
 
     def test_should_copy_tree_with_file_content(self):
-        dir_tree_configurator = DirTreeConfigurator()
-
         dir_function_stub = self.add_file(name="test.html", content="test")
 
-        dir_tree_configurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
+        DirTreeConfigurator.compile(self.SRC_DIR_PATH, self.DST_DIR_PATH, file_function=dir_function_stub)
         self.assertTrue(os.path.exists(self.DST_DIR_PATH))
         dir_function_stub.assert_called_with(dir_function_stub.spy_src_file_path)
         with open(dir_function_stub.spy_dst_file_path, "r") as file:
