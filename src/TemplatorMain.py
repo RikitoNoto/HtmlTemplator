@@ -4,12 +4,16 @@ from typing import Callable
 
 try:
     from dirTreeConfigurator.DirTreeConfigurator import DirTreeConfigurator
-    from templator.HtmlTemplator import HtmlTemplator as Teplator
+    from templator.HtmlTemplator import HtmlTemplator as Templator
     from templator.Jinja2WrapperTemplator import Jinja2WrapperTemplator as TemplatorLibrary
+    from templator.ITemplator import ITemplator
+    from templator.ITemplatorLibraryAdapter import ITemplatorLibraryAdapter
 except ModuleNotFoundError:
     from .dirTreeConfigurator.DirTreeConfigurator import DirTreeConfigurator
-    from .templator.HtmlTemplator import HtmlTemplator as Teplator
+    from .templator.HtmlTemplator import HtmlTemplator as Templator
     from .templator.Jinja2WrapperTemplator import Jinja2WrapperTemplator as TemplatorLibrary
+    from .templator.ITemplator import ITemplator
+    from .templator.ITemplatorLibraryAdapter import ITemplatorLibraryAdapter
 
 DIRECTORY_READ_SKIP_PREFIX = ("_",)
 DIRECTORY_READ_SKIP_SUFFIX = tuple()
@@ -19,6 +23,18 @@ FILE_READ_SKIP_PREFIX = ("_",)
 FILE_READ_SKIP_SUFFIX = tuple()
 FILE_READ_SKIP_STRING = tuple()
 
+def get_templator_library()->type:
+    return TemplatorLibrary
+
+def get_templator()->type:
+    return Templator
+
+def get_templator_instance()->ITemplatorLibraryAdapter:
+    return get_templator()(get_templator_library())
+
+def get_file_datas(source_file_path: str)->dict:
+    #UNDONE
+    return dict()
 
 def is_name_skip(name: str, pattern: str)->bool:
     if(pattern is not ""):
@@ -66,15 +82,33 @@ def is_file_read_skip(path: str)->bool:
 
 
 def is_directory_read_skip(path: str)->bool:
-    pass
+    base_name = os.path.basename(path)
+    is_skip = False
+    if is_skip_with_contexts(base_name, DIRECTORY_READ_SKIP_PREFIX, is_name_skip_with_prefix):
+        is_skip = True
+    elif is_skip_with_contexts(base_name, DIRECTORY_READ_SKIP_SUFFIX, is_name_skip_with_suffix):
+        is_skip = True
+    elif is_skip_with_contexts(base_name, DIRECTORY_READ_SKIP_STRING, is_name_skip):
+        is_skip = True
+
+    return is_skip
+
+def file_compile(file_path: str)->DirTreeConfigurator.File:
+    templator = Templator(TemplatorLibrary)
+    templator.source = file_path
+    templator.datas = get_file_datas(file_path)
 
 
-def dir_function_main(directory_path: str)->str:
+
+def dir_function_main(directory_path: str)->DirTreeConfigurator.Directory:
     pass
 
 
 def file_function_main(file_path: str)->DirTreeConfigurator.File:
-    pass
+    file = DirTreeConfigurator.File()
+    if(not is_file_read_skip(file_path)):
+        pass
+
 
 
 if __name__ == '__main__':

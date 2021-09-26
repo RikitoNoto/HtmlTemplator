@@ -13,14 +13,15 @@ class HtmlTemplator(ITemplatorLibraryAdapter, BaseTemplator):
         self.__initialize_args(templator_library_wrapper, args, kwargs)
 
     def render(self, *args, **kwargs)->str:
-        return self.__render(datas=kwargs.get("datas"))
+        # return self.__render(datas=kwargs.get("datas"))
+        return self.__render(datas=self._datas)
 
     def __render(self, datas:dict=None)->str:
         if(not datas):
             datas = {}
-        return self.__templator_class(self.__source).render(datas)
+        return self.__templator_class(self._source).render(datas)
 
     def __initialize_args(self, templator_library_wrapper:type, *args, **kwargs)->None:
         self.__templator_class = templator_library_wrapper
-        self.__datas = dict()
-        self.__source = ""
+        self._datas = dict()
+        self._source = ""
