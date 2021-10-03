@@ -1,20 +1,22 @@
 from abc import ABCMeta
 from abc import abstractmethod
+from typing import Sequence
 from typing import List
 from typing import Any
 
-class Entry_if(metaclass=ABCMeta):
+
+class EntryIF(metaclass=ABCMeta):
 
     @abstractmethod
-    def get_name(self)->str:
+    def get_name(self) -> str:
         pass
 
     @abstractmethod
-    def set_name(self, name: str)->None:
+    def set_name(self, name: str) -> None:
         pass
     
     @abstractmethod
-    def del_name(self)->None:
+    def del_name(self) -> None:
         pass
 
     @abstractmethod
@@ -22,7 +24,7 @@ class Entry_if(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_contents(self, content: List) -> None:
+    def set_contents(self, content: Sequence) -> None:
         pass
 
     @abstractmethod
@@ -42,19 +44,19 @@ class Entry_if(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_content(self, index: int)->Any:
+    def get_content(self, index: int) -> Any:
         pass
 
     @abstractmethod
-    def set_content(self, index: int, content: Any)->None:
+    def set_content(self, index: int, content: Any) -> None:
         pass
 
     @abstractmethod
-    def del_content(self, index: int)->bool:
+    def del_content(self, index: int) -> bool:
         pass
 
     @abstractmethod
-    def append_content(self, content: Any)->None:
+    def append_content(self, content: Any) -> None:
         pass
 
     name: str = property(get_name, set_name, del_name, "The name of the entry.")
