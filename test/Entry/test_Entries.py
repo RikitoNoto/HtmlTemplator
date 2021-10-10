@@ -82,14 +82,14 @@ class EntriesDirectoryTest(EntryBaseTest):
         self.delete_directory()
 
     @staticmethod
-    def create_directory(path=DEFAULT_PATH, sub_directory_names:tuple=DEFAULT_SUB_DIRECTORY_NAME) -> None:
+    def create_directory(path=DEFAULT_PATH, sub_directory_names: tuple = DEFAULT_SUB_DIRECTORY_NAME) -> None:
         if not os.path.exists(os.path.dirname(path)):
             os.mkdir(os.path.dirname(path))
 
         EntriesDirectoryTest.create_sub_directory(path, sub_directory_names)
 
     @staticmethod
-    def create_sub_directory(path=DEFAULT_PATH, sub_directory_names:tuple=DEFAULT_SUB_DIRECTORY_NAME) -> None:
+    def create_sub_directory(path=DEFAULT_PATH, sub_directory_names: tuple = DEFAULT_SUB_DIRECTORY_NAME) -> None:
         for name in sub_directory_names:
             if isinstance(name, str):
                 if not os.path.exists(os.path.join(path, name)):
@@ -115,7 +115,6 @@ class EntriesDirectoryTest(EntryBaseTest):
         self.assertEqual(self.instance.contents, [])
 
     def test_should_be_reflect_file_with_content(self):
-        content = "test"
         sub_directory_names = self.DEFAULT_SUB_DIRECTORY_NAME
         self.create_sub_directory(sub_directory_names=sub_directory_names)
         self.instance.path = self.path
@@ -123,6 +122,7 @@ class EntriesDirectoryTest(EntryBaseTest):
         for name in sub_directory_names:
             if name not in self.instance.contents:
                 self.fail()
+
 
 if __name__ == '__main__':
     unittest.main()
