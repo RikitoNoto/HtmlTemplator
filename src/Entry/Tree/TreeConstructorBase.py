@@ -1,4 +1,3 @@
-from abc import ABCMeta
 from abc import abstractmethod
 from typing import Union
 import sys
@@ -6,81 +5,84 @@ import os
 sys.path.append(os.path.abspath(".."))
 
 try:
+    from TreeConstructorIF import TreeConstructorIF
     from Compiler.EntryCompilerIF import EntryCompilerIF as EntryCompiler
     from Entry.EntryIF import EntryIF
 except ModuleNotFoundError:
-    pass
+    from .TreeConstructorIF import TreeConstructorIF
 
 
-class TreeConstructorIF(metaclass=ABCMeta):
+class TreeConstructorBase(TreeConstructorIF):
+
+    def __init__(self, *args, **kwargs):
+        self._file_compiler: Union[EntryCompiler, None] = None
+        self._directory_compiler: Union[EntryCompiler, None] = None
+        self._link_compiler: Union[EntryCompiler, None] = None
+        self._device_compiler: Union[EntryCompiler, None] = None
 
     @abstractmethod
     def compile(self, src_path, dst_path) -> bool:
         pass
 
-    @abstractmethod
     def compile_directory(self, src_path, dst_path) -> Union[EntryIF, None]:
-        pass
+        if self._directory_compiler is not None:
+            return self._directory_compiler.create_entry(src_path, dst_path)
+        return None
 
-    @abstractmethod
     def compile_file(self, src_path, dst_path) -> Union[EntryIF, None]:
-        pass
+        if self._file_compiler is not None:
+            return self._file_compiler.create_entry(src_path, dst_path)
+        return None
 
-    @abstractmethod
     def compile_link(self, src_path, dst_path) -> Union[EntryIF, None]:
-        pass
+        if self._link_compiler is not None:
+            return self._link_compiler.create_entry(src_path, dst_path)
+        return None
 
-    @abstractmethod
     def compile_device(self, src_path, dst_path) -> Union[EntryIF, None]:
-        pass
-    
-    @abstractmethod
+        if self._device_compiler is not None:
+            return self._device_compiler.create_entry(src_path, dst_path)
+        return None
+
     def get_file_compiler(self) -> Union[EntryCompiler, None]:
-        pass
-    
-    @abstractmethod
+        return self._file_compiler
+
     def set_file_compiler(self, file_compiler: Union[EntryCompiler, None]) -> None:
-        pass
-    
-    @abstractmethod
+        if isinstance(file_compiler, EntryCompiler):
+            self._file_compiler: EntryCompiler = file_compiler
+
     def del_file_compiler(self) -> None:
-        pass
+        del self._file_compiler
 
-    @abstractmethod
     def get_directory_compiler(self) -> Union[EntryCompiler, None]:
-        pass
+        return self._directory_compiler
 
-    @abstractmethod
     def set_directory_compiler(self, directory_compiler: Union[EntryCompiler, None]) -> None:
-        pass
+        if isinstance(directory_compiler, EntryCompiler):
+            self._directory_compiler: EntryCompiler = directory_compiler
 
-    @abstractmethod
     def del_directory_compiler(self) -> None:
-        pass
+        del self._directory_compiler
 
-    @abstractmethod
     def get_link_compiler(self) -> Union[EntryCompiler, None]:
-        pass
+        return self._link_compiler
 
-    @abstractmethod
     def set_link_compiler(self, link_compiler: Union[EntryCompiler, None]) -> None:
-        pass
+        if isinstance(link_compiler, EntryCompiler):
+            self._link_compiler: EntryCompiler = link_compiler
 
-    @abstractmethod
     def del_link_compiler(self) -> None:
-        pass
+        del self._link_compiler
 
-    @abstractmethod
     def get_device_compiler(self) -> Union[EntryCompiler, None]:
-        pass
+        return self._device_compiler
 
-    @abstractmethod
     def set_device_compiler(self, device_compiler: Union[EntryCompiler, None]) -> None:
-        pass
+        if isinstance(device_compiler, EntryCompiler):
+            self._device_compiler: EntryCompiler = device_compiler
 
-    @abstractmethod
     def del_device_compiler(self) -> None:
-        pass
+        del self._device_compiler
 
     file_factory = property(get_file_compiler, set_file_compiler, del_file_compiler, "")
     directory_compiler = property(get_directory_compiler, set_directory_compiler, del_directory_compiler, "")
