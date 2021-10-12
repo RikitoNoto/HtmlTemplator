@@ -1,13 +1,13 @@
 import os
 try:
-    from EntryIF import EntryIF
+    from Entry import EntryIF
     from Entry import File
     from Entry import Directory
     from Entry import Link
     from Entry import Device
 
 except ModuleNotFoundError:
-    from .EntryIF import EntryIF
+    from .Entry import EntryIF
     from .Entry import File
     from .Entry import Directory
     from .Entry import Link
@@ -19,7 +19,7 @@ class EntryFacade:
     class UnknownEntry(Exception):
         pass
 
-    def make_entry(self, path) -> EntryIF:
+    def make_entry(self, path, reflect=False) -> EntryIF:
         entry: EntryIF
         if os.path.isfile(path):
             entry = self._make_file(path)
@@ -32,6 +32,8 @@ class EntryFacade:
         else:
             raise self.UnknownEntry("Selected unknown entry.")
 
+        if reflect and entry is not None:
+            entry.reflect()
         return entry
 
     def _make_file(self, path) -> File:
