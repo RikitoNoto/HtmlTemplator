@@ -1,9 +1,12 @@
-import unittest
 import os
 import shutil
+import sys
+sys.path.append(os.path.abspath("../.."))
+
+from src.Entry.Entry import EntryIF
 
 
-class TestUtility(unittest.TestCase):
+class TestUtility:
     FILE_ENCODING = "utf-8"
 
     @staticmethod
@@ -61,6 +64,16 @@ class TestUtility(unittest.TestCase):
             for directory in sub_directory:
                 shutil.rmtree(os.path.join(path, directory))
 
+    @staticmethod
+    def is_same_entry(entry1: EntryIF, entry2: EntryIF) -> bool:
+        if (entry1.path == entry2.path) and (entry1.name == entry2.name) :
+            if len(entry1.contents) == len(entry2.contents):
+                for i, content in enumerate(entry1.contents):
+                    if content != entry2.contents[i]:
+                        break
+                else:
+                    return True
+        return False
 
 if __name__ == '__main__':
     unittest.main()

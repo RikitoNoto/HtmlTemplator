@@ -19,31 +19,36 @@ class EntryFacade:
     class UnknownEntry(Exception):
         pass
 
-    def make_entry(self, path, reflect=False) -> EntryIF:
+    @classmethod
+    def make(cls, path: str, content: tuple, reflect=False) -> EntryIF:
         entry: EntryIF
         if os.path.isfile(path):
-            entry = self._make_file(path)
+            entry = cls._make_file(path)
         elif os.path.isdir(path):
-            entry = self._make_directory(path)
+            entry = cls._make_directory(path)
         elif os.path.islink(path):
-            entry = self._make_link(path)
+            entry = cls._make_link(path)
         elif os.path.ismount(path):
-            entry = self._make_device(path)
+            entry = cls._make_device(path)
         else:
-            raise self.UnknownEntry("Selected unknown entry.")
+            raise cls.UnknownEntry("Selected unknown entry.")
 
         if reflect and entry is not None:
             entry.reflect()
         return entry
 
-    def _make_file(self, path) -> File:
+    @staticmethod
+    def make_file(path) -> File:
         return File(path)
 
-    def _make_directory(self, path) -> Directory:
+    @staticmethod
+    def make_directory(path) -> Directory:
         pass
 
-    def _make_link(self, path) -> Link:
+    @staticmethod
+    def make_link(path) -> Link:
         pass
 
-    def _make_device(self, path) -> Device:
+    @staticmethod
+    def _make_device(path) -> Device:
         pass

@@ -1,14 +1,14 @@
 import unittest
 from test_EntryBase import EntryBaseTest
+from TestUtility import TestUtility
 import os
 import sys
-import shutil
 sys.path.append(os.path.abspath("../.."))
 
 from src.Entry.Entry import *
 
 
-class EntriesFileTest(EntryBaseTest):
+class EntriesFileTest(EntryBaseTest, TestUtility):
     DEFAULT_DIRECTORY_PATH = "./temp"
     DEFAULT_FILE_NAME = "temp_file"
     INSTANCE_CLASS = File
@@ -20,29 +20,11 @@ class EntriesFileTest(EntryBaseTest):
 
     def setUp(self) -> None:
         super().setUp()
-        self.create_file()
+        self.create_file(path=self.DEFAULT_PATH, content="")
 
     def tearDown(self) -> None:
         super().tearDown()
-        self.delete_file()
-
-    @staticmethod
-    def create_file(path=DEFAULT_PATH) -> None:
-        if not os.path.exists(os.path.dirname(path)):
-            os.mkdir(os.path.dirname(path))
-        open(path, "w").close()
-
-    @classmethod
-    def write_file_content(cls, content="", path=DEFAULT_PATH, mode="w+") -> None:
-        if not os.path.exists(path):
-            cls.create_file(path)
-        with open(path, mode=mode, encoding="utf-8") as file:
-            file.write(content)
-
-    @staticmethod
-    def delete_file(path=DEFAULT_PATH) -> None:
-        if os.path.exists(os.path.dirname(path)):
-            os.remove(path)
+        self.delete_file(path=self.DEFAULT_PATH)
 
     def test_should_be_reflect_file_name(self):
         self.instance.path = self.path
@@ -56,13 +38,13 @@ class EntriesFileTest(EntryBaseTest):
 
     def test_should_be_reflect_file_with_content(self):
         content = "test"
-        self.write_file_content(content=content)
+        self.write_file_content(path=self.DEFAULT_PATH, content=content)
         self.instance.path = self.path
         self.instance.reflect()
         self.assertEqual(self.instance.contents[File.FILE_CONTENT_INDEX], content)
 
 
-class EntriesDirectoryTest(EntryBaseTest):
+class EntriesDirectoryTest(EntryBaseTest, TestUtility):
     DEFAULT_DIRECTORY_PATH = "."
     DEFAULT_DIRECTORY_NAME = "temp"
     INSTANCE_CLASS = Directory
@@ -79,30 +61,7 @@ class EntriesDirectoryTest(EntryBaseTest):
 
     def tearDown(self) -> None:
         super().tearDown()
-        self.delete_directory()
-
-    @staticmethod
-    def create_directory(path=DEFAULT_PATH, sub_directory_names: tuple = DEFAULT_SUB_DIRECTORY_NAME) -> None:
-        if not os.path.exists(os.path.dirname(path)):
-            os.mkdir(os.path.dirname(path))
-
-        EntriesDirectoryTest.create_sub_directory(path, sub_directory_names)
-
-    @staticmethod
-    def create_sub_directory(path=DEFAULT_PATH, sub_directory_names: tuple = DEFAULT_SUB_DIRECTORY_NAME) -> None:
-        for name in sub_directory_names:
-            if isinstance(name, str):
-                if not os.path.exists(os.path.join(path, name)):
-                    os.mkdir(os.path.join(path, name))
-            else:
-                EntriesDirectoryTest.create_sub_directory(path=path, sub_directory_names=sub_directory_names)
-
-    @staticmethod
-    def delete_directory(path=DEFAULT_PATH) -> None:
-        if os.path.exists(path):
-            sub_directory = os.listdir(path)
-            for directory in sub_directory:
-                shutil.rmtree(os.path.join(path, directory))
+        self.delete_directory(path=self.DEFAULT_PATH)
 
     def test_should_be_reflect_directory_name(self):
         self.instance.path = self.path
@@ -116,7 +75,7 @@ class EntriesDirectoryTest(EntryBaseTest):
 
     def test_should_be_reflect_file_with_content(self):
         sub_directory_names = self.DEFAULT_SUB_DIRECTORY_NAME
-        self.create_sub_directory(sub_directory_names=sub_directory_names)
+        self.create_sub_directory(path=self.DEFAULT_PATH, sub_directory_names=sub_directory_names)
         self.instance.path = self.path
         self.instance.reflect()
         for name in sub_directory_names:
